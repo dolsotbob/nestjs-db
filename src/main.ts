@@ -1,3 +1,9 @@
+import { webcrypto } from 'crypto';
+
+if (!global.crypto) {
+  global.crypto = webcrypto as any;
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import dotenv from 'dotenv';

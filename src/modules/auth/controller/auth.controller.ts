@@ -13,7 +13,7 @@ import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
   async login(@Body() body: { userId: string; password: string }) {
@@ -38,3 +38,4 @@ export class AuthController {
     return this.authService.registerUser(createUserDto);
   }
 }
+

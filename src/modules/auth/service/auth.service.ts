@@ -8,7 +8,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private usersService: UserService
-  ) {}
+  ) { }
 
   async validateUser(userId: string, password: string) {
     const user = await this.usersService.findByUserId(userId);
@@ -29,3 +29,4 @@ export class AuthService {
     return this.usersService.registerUser(createUserDto);
   }
 }
+
