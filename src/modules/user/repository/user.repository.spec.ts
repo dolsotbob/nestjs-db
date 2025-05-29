@@ -29,6 +29,8 @@ describe('UserRepository', () => {
             count: jest.fn(),
             merge: jest.fn(),
             delete: jest.fn(),
+            update: jest.fn(),
+            exists: jest.fn(),
           },
         },
       ],
@@ -70,22 +72,57 @@ describe('UserRepository', () => {
   });
 
   it('userId로 사용자가 존재하는지 확인해야 합니다.', async () => {
-    mockRepo.count.mockResolvedValue(1);
+    // 방법 1 (Count)
+    // mockRepo.count.mockResolvedValue(1);
+
+    // 방법 2 (Exists)
+    mockRepo.exists.mockResolvedValue(true);
     const exists = await userRepository.existsByUserId('testuser');
     expect(exists).toBe(true);
   });
 
   it('사용자를 수정해야 합니다.', async () => {
-    const existingUser = { id: 1, userId: 'testuser' } as User;
-    const updatedUser = { ...existingUser, email: 'updated@example.com' };
-    mockRepo.findOne.mockResolvedValue(existingUser);
-    mockRepo.merge.mockReturnValue(updatedUser);
-    mockRepo.save.mockResolvedValue(updatedUser);
+    // 방법 1 (Merge)
+    // const existingUser = { id: 1, userId: 'testuser' } as User;
+    // const updatedUser = { ...existingUser, email: 'updated@example.com' };
+    // mockRepo.findOne.mockResolvedValue(existingUser);
+    // mockRepo.merge.mockReturnValue(updatedUser);
+    // mockRepo.save.mockResolvedValue(updatedUser);
+
+    // const result = await userRepository.update('testuser', {
+    //   email: 'updated@example.com',
+    // });
+
+    // expect(result).toEqual(updatedUser);
+
+    // 방법 2 (Update)
+    const existingUser = {
+      id: 1,
+      userId: 'testuser',
+      email: 'old@example.com',
+    } as User;
+    const updatedUser = {
+      ...existingUser,
+      email: 'updated@example.com',
+    } as User;
+
+    mockRepo.findOne
+      .mockResolvedValueOnce(existingUser)
+      .mockResolvedValueOnce(updatedUser);
+
+    mockRepo.update.mockResolvedValue({
+      raw: {},
+      affected: 1,
+      generatedMaps: [],
+    });
 
     const result = await userRepository.update('testuser', {
       email: 'updated@example.com',
     });
 
+    expect(mockRepo.update).toHaveBeenCalledWith(1, {
+      email: 'updated@example.com',
+    });
     expect(result).toEqual(updatedUser);
   });
 
